@@ -12,11 +12,17 @@ public class Produit {
     private long id;
 
     @NotBlank
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String url;
 
     @Column(nullable = false)
     private boolean available;
+
+    @Column(nullable = false)
+    private String price;
+
+    @Column(nullable = false)
+    private String name;
 
     @NotBlank
     @Column(nullable = false)
@@ -31,17 +37,19 @@ public class Produit {
     public Produit() {
     }
 
-    public Produit(long id, String url, boolean available, String reference, ZonedDateTime lastRefreshed, Utilisateur utilisateur) {
+    public Produit(long id, String url, boolean available, String reference, ZonedDateTime lastRefreshed, String price, Utilisateur utilisateur) {
         this.id = id;
         this.url = url;
+        this.price = price;
         this.available = available;
         this.reference = reference;
         this.lastRefreshed = lastRefreshed;
         this.utilisateur = utilisateur;
     }
 
-    public Produit(String url, boolean available, String reference, ZonedDateTime lastRefreshed, Utilisateur utilisateur) {
+    public Produit(String url, boolean available, String reference, ZonedDateTime lastRefreshed, String price, Utilisateur utilisateur) {
         this.url = url;
+        this.price = price;
         this.available = available;
         this.reference = reference;
         this.lastRefreshed = lastRefreshed;
@@ -96,16 +104,32 @@ public class Produit {
         this.utilisateur = utilisateur;
     }
 
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Produit produit = (Produit) o;
-        return id == produit.id && available == produit.available && Objects.equals(url, produit.url) && Objects.equals(reference, produit.reference) && Objects.equals(lastRefreshed, produit.lastRefreshed) && Objects.equals(utilisateur, produit.utilisateur);
+        return id == produit.id && available == produit.available && url.equals(produit.url) && price.equals(produit.price) && name.equals(produit.name) && reference.equals(produit.reference) && lastRefreshed.equals(produit.lastRefreshed) && utilisateur.equals(produit.utilisateur);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, url, available, reference, lastRefreshed, utilisateur);
+        return Objects.hash(id, url, name, available, reference, price, lastRefreshed, utilisateur);
     }
 }

@@ -13,6 +13,8 @@ import java.util.List;
 @Service
 public class UtilisateurService {
 
+    private final ProduitService produitService;
+
     private final UtilisateurRepository utilisateurRepository;
 
     public boolean isUsernameTaken(String username) {
@@ -49,8 +51,9 @@ public class UtilisateurService {
     }
 
     @Autowired
-    public UtilisateurService(UtilisateurRepository utilisateurRepository) {
+    public UtilisateurService(UtilisateurRepository utilisateurRepository, ProduitService produitService) {
         this.utilisateurRepository = utilisateurRepository;
+        this.produitService = produitService;
     }
 
     public List<Produit> getAllProduits(String name) throws IdentityNotFoundException {
@@ -60,4 +63,5 @@ public class UtilisateurService {
 
         return fetched.getProduit();
     }
+
 }

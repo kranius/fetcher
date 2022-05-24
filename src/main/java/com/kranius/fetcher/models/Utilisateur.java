@@ -47,6 +47,16 @@ public class Utilisateur {
         this.produit.remove(produit);
     }
 
+    public long hasProduit(Produit prod) {
+        for (Produit p : produit) {
+            if (p.getUrl().equals(prod.getUrl())) {
+                return p.getId();
+            }
+        }
+
+        return -1L;
+    }
+
     public Utilisateur() {
     }
 
