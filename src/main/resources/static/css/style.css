@@ -1,0 +1,18 @@
+
+#main {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#menu {
+    background-color: #002333;
+    color: #FFFFFF;
+}
+
+#app {
+    background-color: #DEEFE7;
+}
+
+#spacing {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
