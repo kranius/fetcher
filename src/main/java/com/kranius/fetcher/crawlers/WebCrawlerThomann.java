@@ -1,9 +1,11 @@
 package com.kranius.fetcher.crawlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gargoylesoftware.htmlunit.html.*;
 import com.kranius.fetcher.http.SimpleWebClient;
 import com.kranius.fetcher.models.Produit;
 import com.kranius.fetcher.models.Utilisateur;
+import com.kranius.fetcher.objectmappers.ThomannMapper;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,12 +24,24 @@ public class WebCrawlerThomann implements WebCrawlerInterface {
 
         SimpleWebClient webClient = SimpleWebClient.getClient();
 
+        // seems to have problems with iframes
         HtmlPage page = webClient.getWebPage(url);
 
         DomNodeList<DomElement> scriptsTag = page.getElementsByTagName("script");
-        scriptsTag.forEach(node -> {
-            System.out.println(node);
-        });
+
+        for (int i=0; i<scriptsTag.size(); i++) {
+            System.out.println(i + " = " + scriptsTag.get(i));
+       }
+
+        // we get the 62th script element which contains a call to `dataLayer.push(jsonblob)`
+        DomElement tag = scriptsTag.get(62);
+        String content = tag.getTextContent();
+
+        // we extract only the text between parenthesis (the json) and deserialze it
+        String json = content.substring(content.indexOf("(") + 1, content.indexOf(")"));
+        ObjectMapper mapper = new ObjectMapper();
+        ThomannMapper thomannMapper = mapper.readValue(json, ThomannMapper.class);
+
 
        // List<HtmlElement> referenceElement = page.getByXPath("//div[@class='']");
        // List<HtmlElement> priceElement = page.getByXPath("//div[@class='price']");
@@ -35,43 +49,17 @@ public class WebCrawlerThomann implements WebCrawlerInterface {
         List<HtmlElement> availabilityElement = page.getByXPath("//div[@class='fx-availability']");
         List<HtmlElement> titleElement = page.getByXPath("//div[@class='fx-product-headline']");
 
-
-        /*
-        if (!items.isEmpty()) {
-            // Iterate over all elements
-            for (HtmlElement item : items) {
-
-                // Get the details from <p class="result-info"><a href=""></a></p>
-                HtmlAnchor itemAnchor = ((HtmlAnchor) item.getFirstByXPath(".//p[@class='result-info']/a"));
-
-                // Get the price from <a><span class="result-price"></span></a>
-                HtmlElement spanPrice = ((HtmlElement) item.getFirstByXPath(".//a/span[@class='result-price']")) ;
-
-                String itemName = itemAnchor.asText();
-                String itemUrl =  itemAnchor.getHrefAttribute();
-
-                // It is possible that an item doesn't have any price
-                String itemPrice = spanPrice == null ? "0.0" : spanPrice.asText() ;
-
-                System.out.println( String.format("Name : %s Url : %s Price : %s", itemName, itemPrice, itemUrl));
-
-            }
-        }
-        else {
-            System.out.println("No items found !");
-        }
-        */
-
+        System.out.println(json);
 
 
         // available
         produit.setAvailable(true);
         // reference
-        produit.setReference("sfsdfsdf");
+        produit.setReference(thomannMapper.getReference());
         // prix
-        produit.setPrice("123");
+        produit.setPrice(thomannMapper.getPrice());
         // name
-        produit.setName("babyface");
+        produit.setName(thomannMapper.getName());
 
         return produit;
     }
